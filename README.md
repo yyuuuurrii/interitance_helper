@@ -2,7 +2,7 @@
 
 [openai/openai-realtime-console](https://github.com/openai/openai-realtime-console)をベースに必要機能のみに削ぎ落とした実証実験用のデモアプリケーションです。Next.jsで構築されています。
 
-URL: https://yyuuuurrii.github.io/carepost-voicechat-llm/
+URL: https://yyuuuurrii.github.io/interitance_helper/
 
 ## 実行方法
 
