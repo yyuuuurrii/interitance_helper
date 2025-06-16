@@ -2,6 +2,7 @@
 
 import { ApiKeyCard, localStorageKey } from '@/components/api-key-card'
 import { ConversationCard } from '@/components/conversation-card'
+import { ModelInfoCard } from '@/components/model-info-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -156,12 +157,13 @@ export default function Home() {
     const client = clientRef.current
 
     client.updateSession({
+      model: 'gpt-4o-realtime-preview',
       instructions: instructions?.content,
       // Voice Optionsを指定
       voice: 'coral',
       // VADを無効にして手動制御にする
       turn_detection: null,
-      input_audio_transcription: { model: 'whisper-1' },
+      input_audio_transcription: { model: 'gpt-4o-transcribe' },
       temperature: 0.6,
     })
 
@@ -217,6 +219,11 @@ export default function Home() {
         </div>
         <div>
           <ApiKeyCard />
+          <ModelInfoCard 
+            conversationModel="gpt-4o-realtime-preview"
+            transcriptionModel="gpt-4o-transcribe"
+            voice="coral"
+          />
           <Card className='mb-4'>
             <CardHeader>
               <CardTitle>Instructions</CardTitle>
