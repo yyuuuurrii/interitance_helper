@@ -42,6 +42,7 @@ export default function Home() {
 
   const [items, setItems] = useState<ItemType[]>([])
   const [isConnected, setIsConnected] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
 
   // システムプロンプト関連の処理
   const [instructions, setInstructions] = useState<Instructions>()
@@ -65,6 +66,24 @@ export default function Home() {
           clientRef.current.appendInputAudio(data.mono)
         ))
   }
+
+  // 手動録音制御
+  const toggleRecording = useCallback(async () => {
+    const wavRecorder = wavRecorderRef.current
+    const client = clientRef.current
+    
+    if (!isRecording) {
+      // 録音開始
+      setIsRecording(true)
+      await wavRecorder.record((data) => client.appendInputAudio(data.mono))
+    } else {
+      // 録音停止して音声送信
+      setIsRecording(false)
+      await wavRecorder.pause()
+      // 音声を送信して応答を生成
+      client.createResponse()
+    }
+  }, [isRecording])
 
   const connectConversation = useCallback(async () => {
     // 前回の会話ログが残っていたらクリア
@@ -95,7 +114,7 @@ export default function Home() {
         text: `もしもし`,
       },
     ])
-    await wavRecorder.record((data) => client.appendInputAudio(data.mono))
+    // 手動制御なので自動録音は開始しない
   }, [])
 
   const disconnectConversation = useCallback(async () => {
@@ -112,6 +131,8 @@ export default function Home() {
 
     // ミュート設定も解除
     setIsMute(false)
+    // 録音状態もリセット
+    setIsRecording(false)
   }, [])
 
   // 会話ログのスクロールを最下部に移動
@@ -138,11 +159,8 @@ export default function Home() {
       instructions: instructions?.content,
       // Voice Optionsを指定
       voice: 'coral',
-      // VADをデフォルト設定にする
-      turn_detection: { 
-        type: 'server_vad',
-        silence_duration_ms: 100,
-      },
+      // VADを無効にして手動制御にする
+      turn_detection: null,
       input_audio_transcription: { model: 'whisper-1' },
       temperature: 0.6,
     })
@@ -247,6 +265,16 @@ export default function Home() {
                   )}
                   {isConnected ? 'Finish Conversation' : 'Start Conversation'}
                 </Button>
+                {isConnected && (
+                  <Button
+                    onClick={toggleRecording}
+                    variant={isRecording ? 'destructive' : 'secondary'}
+                    className='mb-4 w-full'
+                  >
+                    <Mic className='mr-2' />
+                    {isRecording ? '録音停止・送信' : '録音開始'}
+                  </Button>
+                )}
                 <div className='text-center text-sm text-muted-foreground'>
                   {isConnected ? (
                     <div className='flex items-center justify-center'>
