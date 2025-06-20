@@ -2,14 +2,287 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Rajdhani', Arial, Helvetica, sans-serif;
+  background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Cockpit UI Animations and Effects */
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff;
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes scan-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
+
+@keyframes data-stream {
+  0% { opacity: 0; transform: translateY(20px); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes status-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+.cockpit-container {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cockpit-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+  animation: scan-line 3s infinite;
+  z-index: 1;
+}
+
+.cockpit-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: #00ffff;
+  text-shadow: 
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 30px #00ffff;
+  animation: hologram-flicker 2s infinite;
+  letter-spacing: 3px;
+}
+
+.cockpit-card {
+  background: linear-gradient(145deg, #111127 0%, #1a1a2e 50%, #111127 100%);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  box-shadow: 
+    0 4px 15px rgba(0, 255, 255, 0.2),
+    inset 0 1px 0 rgba(0, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cockpit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 8px 25px rgba(0, 255, 255, 0.4),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2);
+}
+
+.cockpit-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+  animation: scan-line 4s infinite;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: status-blink 1s infinite;
+}
+
+.status-online {
+  background: #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+.status-offline {
+  background: #ff0000;
+  box-shadow: 0 0 10px #ff0000;
+}
+
+.status-recording {
+  background: #ffff00;
+  box-shadow: 0 0 10px #ffff00;
+}
+
+.cockpit-button {
+  background: linear-gradient(145deg, #1a1a2e, #2d2d4a);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cockpit-button:hover {
+  background: linear-gradient(145deg, #2d2d4a, #1a1a2e);
+  animation: pulse-glow 1s infinite;
+  transform: translateY(-2px);
+}
+
+.cockpit-button:active {
+  transform: translateY(0);
+}
+
+.cockpit-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.cockpit-button:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.conversation-display {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #00ffff;
+  border-radius: 10px;
+  max-height: 600px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.conversation-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(90deg, transparent 98%, #00ffff 100%),
+    linear-gradient(0deg, transparent 98%, #00ffff 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.conversation-display::-webkit-scrollbar {
+  width: 8px;
+}
+
+.conversation-display::-webkit-scrollbar-track {
+  background: #111127;
+  border-radius: 4px;
+}
+
+.conversation-display::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #0088cc);
+  border-radius: 4px;
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.data-stream-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.data-stream-line {
+  position: absolute;
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(180deg, transparent, #00ffff, transparent);
+  animation: data-stream 3s infinite;
+}
+
+.holographic-text {
+  color: #00ffff;
+  text-shadow: 
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 15px #00ffff;
+  font-family: 'Orbitron', monospace;
+  animation: hologram-flicker 3s infinite;
+}
+
+.control-panel {
+  background: linear-gradient(135deg, #111127 0%, #1a1a2e 100%);
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  animation: spin 10s linear infinite;
+  z-index: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.neon-border {
+  border: 2px solid #00ffff;
+  box-shadow: 
+    0 0 5px #00ffff,
+    inset 0 0 5px rgba(0, 255, 255, 0.1);
 }
 
 @layer base {

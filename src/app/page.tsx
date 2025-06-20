@@ -3,7 +3,6 @@
 import { ApiKeyCard, localStorageKey } from '@/components/api-key-card'
 import { ConversationCard } from '@/components/conversation-card'
 import { ModelInfoCard } from '@/components/model-info-card'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import {
@@ -163,7 +162,7 @@ export default function Home() {
       voice: 'coral',
       // VADを無効にして手動制御にする
       turn_detection: null,
-      input_audio_transcription: { model: 'gpt-4o-transcribe' },
+      input_audio_transcription: { model: 'whisper-1' },
       temperature: 0.6,
     })
 
@@ -206,101 +205,151 @@ export default function Home() {
       // cleanup; resets to defaults
       client.reset()
     }
-  }, [])
+  }, [instructions?.content])
 
   return (
-    <div className='container mx-auto p-4'>
-      <h1 className='text-2xl font-bold mb-4 text-center'>
-        Carepost Voice Chat Demo
-      </h1>
-      <div className='grid grid-cols-3 gap-4'>
-        <div className='col-span-2'>
-          <ConversationCard items={items} />
-        </div>
-        <div>
-          <ApiKeyCard />
-          <ModelInfoCard 
-            conversationModel="gpt-4o-realtime-preview"
-            transcriptionModel="gpt-4o-transcribe"
-            voice="coral"
+    <div className='min-h-screen grid-pattern'>
+      {/* Data Stream Background Effect */}
+      <div className='data-stream-effect'>
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className='data-stream-line'
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 4}s`,
+            }}
           />
-          <Card className='mb-4'>
-            <CardHeader>
-              <CardTitle>Instructions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Select onValueChange={onChangeInstructions}>
-                <SelectTrigger className='w-[180px]'>
-                  <SelectValue placeholder='Select Instructions' />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectableInstructions.map((instruction) => {
-                    return (
-                      <SelectItem
-                        key={instruction.id}
-                        // stringしか受け付けないのでJSON.stringifyで変換
-                        value={JSON.stringify(instruction)}
-                      >
-                        {instruction.shortName}
-                      </SelectItem>
-                    )
-                  })}
-                </SelectContent>
-              </Select>
-              <div className='mt-4 text-sm'>
-                {instructions ? instructions.content : '---'}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Controls</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className='flex flex-col items-center'>
-                <Button
-                  onClick={
-                    isConnected ? disconnectConversation : connectConversation
-                  }
-                  variant={isConnected ? 'destructive' : 'default'}
-                  className='mb-4 w-full'
-                >
-                  {isConnected ? (
-                    <MicOff className='mr-2' />
-                  ) : (
-                    <Mic className='mr-2' />
-                  )}
-                  {isConnected ? 'Finish Conversation' : 'Start Conversation'}
-                </Button>
-                {isConnected && (
-                  <Button
-                    onClick={toggleRecording}
-                    variant={isRecording ? 'destructive' : 'secondary'}
-                    className='mb-4 w-full'
-                  >
-                    <Mic className='mr-2' />
-                    {isRecording ? '録音停止・送信' : '録音開始'}
-                  </Button>
-                )}
-                <div className='text-center text-sm text-muted-foreground'>
-                  {isConnected ? (
-                    <div className='flex items-center justify-center'>
-                      {/* ref. https://github.com/shadcn-ui/ui/issues/230#issuecomment-1518156039 */}
-                      <Switch
-                        id='mute'
-                        checked={isMute}
-                        onCheckedChange={onChangeMuteToggle}
-                      />
-                      <Label htmlFor='mute'>ミュート</Label>
-                    </div>
-                  ) : (
-                    '会話を開始するには「Start Conversation」をクリックしてください'
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        ))}
+      </div>
+      
+      <div className='cockpit-container container mx-auto p-6 mt-4'>
+        <div className='flex items-center justify-center mb-6'>
+          <h1 className='cockpit-title'>
+            <span className='status-indicator status-online'></span>
+            CAREPOST VOICE COMMAND CENTER
+          </h1>
         </div>
+        <div className='grid grid-cols-3 gap-6'>
+        <div className='col-span-2'>
+          <div className='cockpit-card conversation-display p-4'>
+            <div className='flex items-center mb-4'>
+              <span className={`status-indicator ${
+                isConnected ? 'status-online' : 'status-offline'
+              }`}></span>
+              <h2 className='holographic-text text-lg font-bold'>
+                COMMUNICATION CHANNEL
+              </h2>
+              {isRecording && (
+                <span className='status-indicator status-recording ml-4'></span>
+              )}
+            </div>
+            <ConversationCard items={items} />
+          </div>
+        </div>
+        <div className='space-y-4'>
+          <div className='cockpit-card'>
+            <ApiKeyCard />
+          </div>
+          
+          <div className='cockpit-card'>
+            <ModelInfoCard 
+              conversationModel="gpt-4o-realtime-preview"
+              transcriptionModel="whisper-1"
+              voice="coral"
+            />
+          </div>
+          
+          <div className='cockpit-card'>
+            <Card className='bg-transparent border-none'>
+              <CardHeader>
+                <CardTitle className='holographic-text'>MISSION PARAMETERS</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select onValueChange={onChangeInstructions}>
+                  <SelectTrigger className='w-full neon-border bg-transparent text-cyan-400'>
+                    <SelectValue placeholder='Select Mission Profile' />
+                  </SelectTrigger>
+                  <SelectContent className='bg-gray-900 border-cyan-400'>
+                    {selectableInstructions.map((instruction) => {
+                      return (
+                        <SelectItem
+                          key={instruction.id}
+                          value={JSON.stringify(instruction)}
+                          className='text-cyan-400 hover:bg-cyan-900'
+                        >
+                          {instruction.shortName}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+                <div className='mt-4 text-sm text-cyan-300 bg-black/50 p-3 rounded neon-border'>
+                  {instructions ? instructions.content : 'AWAITING MISSION PARAMETERS...'}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className='control-panel'>
+            <Card className='bg-transparent border-none relative z-10'>
+              <CardHeader>
+                <CardTitle className='holographic-text'>CONTROL MATRIX</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='flex flex-col items-center space-y-4'>
+                  <button
+                    onClick={
+                      isConnected ? disconnectConversation : connectConversation
+                    }
+                    className={`cockpit-button w-full py-4 px-6 rounded-lg ${isConnected ? 'border-red-500 text-red-400' : ''}`}
+                  >
+                    <div className='flex items-center justify-center relative z-10'>
+                      {isConnected ? (
+                        <MicOff className='mr-2' />
+                      ) : (
+                        <Mic className='mr-2' />
+                      )}
+                      {isConnected ? 'TERMINATE LINK' : 'ESTABLISH LINK'}
+                    </div>
+                  </button>
+                  
+                  {isConnected && (
+                    <button
+                      onClick={toggleRecording}
+                      className={`cockpit-button w-full py-4 px-6 rounded-lg ${isRecording ? 'border-yellow-500 text-yellow-400' : ''}`}
+                    >
+                      <div className='flex items-center justify-center relative z-10'>
+                        <Mic className='mr-2' />
+                        {isRecording ? 'TRANSMIT DATA' : 'RECORD VOICE'}
+                      </div>
+                    </button>
+                  )}
+                  
+                  <div className='text-center text-sm'>
+                    {isConnected ? (
+                      <div className='flex items-center justify-center space-x-2'>
+                        <Switch
+                          id='mute'
+                          checked={isMute}
+                          onCheckedChange={onChangeMuteToggle}
+                          className='data-[state=checked]:bg-cyan-500'
+                        />
+                        <Label htmlFor='mute' className='text-cyan-400'>AUDIO MUTE</Label>
+                      </div>
+                    ) : (
+                      <div className='text-cyan-400 holographic-text'>
+                        INITIALIZE COMMUNICATION PROTOCOL
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   )

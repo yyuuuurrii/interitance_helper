@@ -1,6 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 const localStorageKey = 'tmp::OPENAI_API_KEY'
@@ -34,41 +33,40 @@ const ApiKeyCard = () => {
   }
 
   return (
-    <Card className='mb-4'>
+    <Card className='bg-transparent border-none'>
       <CardHeader>
-        <CardTitle>API Key</CardTitle>
+        <CardTitle className='holographic-text'>SECURITY CREDENTIALS</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='flex items-center space-x-2 mb-2'>
-          <div className='w-full break-words overflow-hidden'>
+        <div className='flex items-center space-x-2 mb-4'>
+          <div className='w-full break-words overflow-hidden bg-black/50 p-3 rounded neon-border text-cyan-300 font-mono text-sm'>
             {savedApiKey && savedApiKey.length > 0
               ? showApiKey
                 ? savedApiKey
-                : '********'
-              : 'Please set your OpenAI API Key…'}
+                : '████████████████████████████████████████████████'
+              : 'AWAITING AUTHORIZATION KEY...'}
           </div>
-          <Button
+          <button
             onClick={toggleShowApiKey}
-            variant='default'
-            className='flex-shrink-0'
+            className='cockpit-button p-2 rounded flex-shrink-0'
           >
             {showApiKey ? (
               <EyeOff className='w-4 h-4' />
             ) : (
               <Eye className='w-4 h-4' />
             )}
-          </Button>
+          </button>
         </div>
         <input
           id='apiKey'
           value={apiKey}
           onChange={handleApiKeyChange}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          placeholder='Enter your OpenAI API key'
+          className='w-full px-4 py-3 bg-transparent border-2 border-cyan-400 rounded-lg focus:outline-none focus:border-cyan-300 text-cyan-300 placeholder-cyan-600 font-mono'
+          placeholder='Enter OpenAI Access Token'
         />
-        <Button onClick={saveApiKey} className='w-full mt-2'>
-          Save API Key
-        </Button>
+        <button onClick={saveApiKey} className='cockpit-button w-full mt-4 py-3 rounded-lg'>
+          <span className='relative z-10'>AUTHORIZE ACCESS</span>
+        </button>
       </CardContent>
     </Card>
   )
